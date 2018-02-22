@@ -4,17 +4,14 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 ''' 加载数据 '''
-data_path = './BCI Data/matlab.mat'
+data_path = './BCI Data/BCI_data.mat'
 ori_data = sio.loadmat(data_path)
 
-channel_num = 28
+channel_num = 3
 cnt, pos, y = ori_data['data'], ori_data['pos'][0], ori_data['label'][0]
-# 选择通道
-cnt = cnt[:, [9, 10, 11, 12, 13, 14, 15,
-              25, 26, 27, 28, 29, 30, 31,
-              41, 42, 43, 44, 45, 46, 47,
-              48, 49, 50, 51, 52, 53, 54]]
+
 cnt = cnt.T
+
 
 ''' 按照通道进行切分 '''
 data_split = []
