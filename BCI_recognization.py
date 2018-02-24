@@ -22,7 +22,6 @@ for i in range(len(pos)):
     data_split.append(data_per_ex)
 data_split = np.array(data_split)
 # print('shape of data_split is', data_split.shape)
-# # shape of data_split is (200, 59, 800)
 
 
 ''' 滤波处理 '''
@@ -45,19 +44,19 @@ time_head = 4
 time_tail = 7
 data_split = data_split[:, :, time_head * sample_freq:time_tail * sample_freq]
 # print('shape of data_split_win is', data_split.shape)
-# # shape of data_split_win is (200, 59, 300)
 
 
 ''' 整体进行fft变换，变到频域下进行分析处理 '''
 data_split = abs(fft(data_split))
 # print('shape of data_split is', data_split.shape)
-# # shape of data_split is (200, 59, 300)
 data_split_win = data_split[:, :, :int(data_split.shape[2] / 2)]
 print('shape of data_split_win is', data_split_win.shape)
 
+
 ''' 频域下的数据，提取5~35Hz的信号 '''
 data_win_freq_split = data_split_win[:, :, 15:105]
-print(data_win_freq_split.shape)
+# print(data_win_freq_split.shape)
+
 
 ''' 处理y为one hot '''
 y_one_hot = []
@@ -86,10 +85,10 @@ from sklearn.preprocessing import StandardScaler
 train_x = np.float32(np.reshape(train_x, [len(train_x), -1]))
 test_x = np.float32(np.reshape(test_x, [len(test_x), -1]))
 # print('shape of train_x is', train_x.shape, '; shape of test_x is', test_x.shape)
-# # shape of train_x is (160, 3540) ; shape of test_x is (40, 3540)
 ss = StandardScaler()
 train_x = ss.fit_transform(train_x)
 test_x = ss.transform(test_x)
+
 
 ''' 扩充数据集 '''
 for _ in range(2):
@@ -101,6 +100,7 @@ for _ in range(2):
 print(train_x.shape, train_y.shape)
 train_x_reshape = train_x.reshape(-1, channel_num, 90, 1)
 test_x_reshape = test_x.reshape(-1, channel_num, 90, 1)
+
 
 ''' 建立模型 '''
 import tensorflow as tf
@@ -125,6 +125,7 @@ w2 = init_weights([1, 9, 8, 10])
 w3 = init_weights([10 * 17, 30])
 w_o = init_weights([30, 2])
 
+
 ''' 建立CNN模型各层 '''
 # 第一组卷积层和池化层，最后dropout
 l1 = tf.nn.relu(tf.nn.conv2d(X, w, strides=[1, 1, 1, 1], padding='VALID'))
@@ -140,9 +141,11 @@ l3 = tf.nn.dropout(l3, p_keep_hidden)
 # 输出层
 py_x = tf.matmul(l3, w_o)
 
+
 ''' 模型优化 '''
 cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=py_x, labels=Y))
 train_op = tf.train.RMSPropOptimizer(0.001, 0.9).minimize(cost)
+
 
 ''' 模型训练与评估 '''
 # 训练参数
@@ -152,6 +155,7 @@ train_epoches = 10
 # 评估
 correct_pred = tf.equal(tf.argmax(py_x, 1), tf.argmax(Y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_pred, dtype=tf.float32))
+
 
 with tf.Session() as sess:
     tf.global_variables_initializer().run()
