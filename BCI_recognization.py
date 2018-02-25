@@ -139,7 +139,7 @@ l2 = tf.nn.dropout(l2, p_keep_conv)
 l3 = tf.nn.relu(tf.matmul(l2, w3))
 l3 = tf.nn.dropout(l3, p_keep_hidden)
 # 输出层
-py_x = tf.nn.softmax(tf.matmul(l3, w_o))
+py_x = tf.matmul(l3, w_o)
 
 
 ''' 模型优化 '''
